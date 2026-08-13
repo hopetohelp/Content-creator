@@ -184,6 +184,47 @@ def load(path):
         os.path.exists(tmp) and os.unlink(tmp)
 
 
+# פרופיל ייחוס שנמדד על הפקה אמיתית (Lyria 3) — `tests/research/lyria3_rap_30s.mp3`.
+# 🔴 המספרים האלה תפסו בפועל את מה שהאוזן קראה לו "חיוור": מיקס פרוצדורלי
+# הראה 43.7% בנמוך-אמצע מול 9.9% ברפרנס, ו-1.6% בנוכחות מול 4.4%.
+BANDS = [(20, 60, "סאב"), (60, 120, "באס"), (120, 400, "נמוך-אמצע"),
+         (400, 2000, "אמצע"), (2000, 6000, "נוכחות"), (6000, 12000, "בהירות"),
+         (12000, 20000, "אוויר")]
+REF_BALANCE = {"סאב": 52.0, "באס": 16.6, "נמוך-אמצע": 9.9, "אמצע": 14.7,
+               "נוכחות": 4.4, "בהירות": 1.6, "אוויר": 0.3}
+
+
+def balance(path):
+    """מאזן ספקטרלי ורוחב סטריאו — האבחון של "למה זה נשמע חיוור"."""
+    ch, sr = load(path)
+    m = np.mean(ch, axis=0)
+    win = m * np.hanning(len(m))
+    S = np.abs(np.fft.rfft(win)); f = np.fft.rfftfreq(len(win), 1 / sr)
+    tot = float(np.sum(S ** 2)) or 1.0
+    out = {nm: float(np.sum(S[(f >= lo) & (f < hi)] ** 2)) / tot * 100
+           for lo, hi, nm in BANDS}
+    corr = 1.0
+    if len(ch) > 1:
+        L, R = ch[0], ch[1]
+        if np.std(L) > 0 and np.std(R) > 0:
+            corr = float(np.corrcoef(L, R)[0, 1])
+    return out, corr
+
+
+def report_balance(path):
+    b, corr = balance(path)
+    print(f"\n── מאזן ספקטרלי: {path}")
+    wide = "🔴 מונו — אפס רוחב" if corr > 0.99 else ("⚠️ צר" if corr > 0.93 else "✅ רחב")
+    print(f"   מתאם ערוצים: {corr:.3f}   {wide}")
+    print(f"   {'פס':12s} {'נמדד':>7s} {'ייחוס':>7s}")
+    for _, _, nm in BANDS:
+        got, ref = b[nm], REF_BALANCE[nm]
+        d = got - ref
+        flag = "✅" if abs(d) < max(4.0, ref * 0.6) else ("🔴" if d > 0 else "⚠️")
+        print(f"   {nm:12s} {got:6.1f}% {ref:6.1f}%  {flag} {d:+5.1f}")
+    print("   (הייחוס נמדד על הפקה אמיתית — tests/research/lyria3_rap_30s.mp3)")
+
+
 def measure(path):
     ch, sr = load(path)
     if not ch or len(ch[0]) == 0:
@@ -241,6 +282,8 @@ def main():
     p.add_argument("files", nargs="*")
     p.add_argument("--target", choices=list(TARGETS), help="שער עובר/נכשל לפי ז׳אנר")
     p.add_argument("--selftest", action="store_true", help="אימות המד מול התקן")
+    p.add_argument("--balance", action="store_true",
+                   help="מאזן ספקטרלי ורוחב סטריאו, בהשוואה להפקה אמיתית")
     a = p.parse_args()
     if a.selftest:
         sys.exit(0 if selftest() else 1)
@@ -249,6 +292,8 @@ def main():
     ok = True
     for f in a.files:
         ok &= report(measure(f), a.target)
+        if a.balance:
+            report_balance(f)
     sys.exit(0 if ok else 1)
 
 

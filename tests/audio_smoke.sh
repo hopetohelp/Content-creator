@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# audio_smoke.sh — בדיקת קצה-לקצה לכלי האודיו: beat.py, chords.py, loudness.py.
+# audio_smoke.sh — בדיקת קצה-לקצה לכלי האודיו:
+#   beat.py · chords.py · band.py · mixdown.py · loudness.py
 #
 # 🔴 הכלל של CLAUDE.md סעיף 6: פקודה שהחזירה 0 היא לא הוכחה.
 # לכן כל שלב כאן מאמת את **התוצר עצמו** — התבנית שנוגנה, הצלילים שנשמעו,
@@ -8,10 +9,10 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 T=/tmp/audio_smoke; mkdir -p "$T"
 
-echo "── 1/5  מד העוצמה מול התקן (BS.1770 + אות הבדיקה של EBU)"
+echo "── 1/7  מד העוצמה מול התקן (BS.1770 + אות הבדיקה של EBU)"
 python3 tools/loudness.py --selftest
 
-echo "── 2/5  beat.py — ארבעת הסגנונות, ותבנית מדודה מול התיעוד"
+echo "── 2/7  beat.py — ארבעת הסגנונות, ותבנית מדודה מול התיעוד"
 for s in rap pop house legacy; do
   python3 tools/beat.py --out "$T/b_$s.wav" --seconds 12 --bpm 126 --style "$s" --stereo >/dev/null
 done
@@ -24,7 +25,7 @@ EXPECT = {"rap":   dict(kick={0,6,10},   perc={8},    hats=16, open={14}),
           "pop":   dict(kick={0,8},      perc={4,12}, hats=8,  open=set()),
           "house": dict(kick={0,4,8,12}, perc={4,12}, hats=16, open={2,6,10,14})}
 def probe(style, bpm=126.0):
-    om = m.mix_at; orig = {n: getattr(m, n) for n in ("kick808","snare","clap","hat","sub")}
+    om = m.mix_at; orig = {n: getattr(m, n) for n in ("kick","snare","clap","hat","sub")}
     last, sched = {"k": None}, []
     def wrap(name, fn):
         def g(*a, **k):
@@ -33,7 +34,7 @@ def probe(style, bpm=126.0):
             last["k"] = kind; return fn(*a, **k)
         return g
     for n, fn in orig.items(): setattr(m, n, wrap(n, fn))
-    m.mix_at = lambda buf, s, pos: (sched.append((pos, last["k"])), om(buf, s, pos))[1]
+    m.mix_at = lambda buf, s, pos, *a, **k: (sched.append((pos, last["k"])), om(buf, s, pos, *a, **k))[1]
     m.build(seconds=60/bpm*4*2, bpm=bpm, style=style)
     m.mix_at = om
     for n, fn in orig.items(): setattr(m, n, fn)
@@ -44,14 +45,14 @@ def probe(style, bpm=126.0):
 for style, e in EXPECT.items():
     g = probe(style)
     opn = g.get("open", set())
-    assert g.get("kick808", set()) == e["kick"],  f"{style}: קיק {sorted(g.get('kick808',set()))} != {sorted(e['kick'])}"
+    assert g.get("kick", set()) == e["kick"],  f"{style}: קיק {sorted(g.get('kick',set()))} != {sorted(e['kick'])}"
     assert (g.get("snare",set()) | g.get("clap",set())) == e["perc"], f"{style}: סנר/מחיאה שגויים"
     assert opn == e["open"], f"{style}: האט פתוח {sorted(opn)} != {sorted(e['open'])}"
     assert len((g.get("hat",set()) | opn)) == e["hats"], f"{style}: מספר האטים שגוי"
     print(f"   ✅ {style}: תבנית תואמת את התיעוד")
 PY
 
-echo "── 3/5  chords.py — חמישה קולות, ובדיקה שהאקורדים בסולם הנכון"
+echo "── 3/7  chords.py — חמישה קולות, ובדיקה שהאקורדים בסולם הנכון"
 for v in pad keys pluck stab bass; do
   python3 tools/chords.py --out "$T/c_$v.wav" --seconds 10 --bpm 108 --key Am \
     --prog "i VI III VII" --voice "$v" --stereo >/dev/null
@@ -77,7 +78,7 @@ for i, num in enumerate(["i","VI","III","VII"]):
     print(f"   ✅ {num}: כל תווי האקורד נמצאו בפועל בספקטרום")
 PY
 
-echo "── 4/5  אף קובץ אינו שקט ואינו באורך 0"
+echo "── 4/7  אף קובץ אינו שקט ואינו באורך 0"
 python3 - <<'PY'
 import glob, numpy as np, soundfile as sf
 bad = []
@@ -89,18 +90,53 @@ assert not bad, f"קבצים שקטים או ריקים: {bad}"
 print(f"   ✅ כל {len(glob.glob('/tmp/audio_smoke/*.wav'))} הקבצים מכילים אודיו אמיתי")
 PY
 
-echo "── 5/5  מיקס מלא (תופים+פד+סטאב) עובר את שער העוצמה"
-python3 tools/beat.py   --out "$T/m_drums.wav" --seconds 24 --bpm 126 --style house --stereo >/dev/null
+echo "── 5/7  band.py — ליווי בכלים אמיתיים מסגנון מוכן"
+if command -v mma >/dev/null && command -v fluidsynth >/dev/null; then
+  python3 tools/band.py --out "$T/band.wav" --style PopBallad --bpm 104 --key Am \
+    --prog "i VI III VII" --repeat 1 >/dev/null
+  python3 - <<'PYA'
+import numpy as np, soundfile as sf
+y, sr = sf.read("/tmp/audio_smoke/band.wav", always_2d=True)
+assert y.size and float(np.max(np.abs(y))) > 1e-3, "band.py הפיק קובץ שקט"
+corr = float(np.corrcoef(y[:, 0], y[:, 1])[0, 1])
+assert corr < 0.99, f"band.py הפיק מונו (מתאם {corr:.3f})"
+print(f"   \u2705 ליווי אמיתי: {len(y)/sr:.1f}s, מתאם ערוצים {corr:.3f}")
+PYA
+else
+  echo "   MMA/fluidsynth לא מותקנים — מדלג (bash tools/bootstrap.sh מתקין)"
+fi
+
+echo "── 6/7  mixdown.py — סטם חלש ודינמי לא נעלם במיקס"
+python3 - <<'PYB'
+import numpy as np, soundfile as sf
+sr = 44100
+t = np.arange(sr * 4) / sr
+quiet = (np.sin(2 * np.pi * 330 * t) * 0.02)[:, None].repeat(2, 1)
+sf.write("/tmp/audio_smoke/quiet.wav", quiet, sr, subtype="PCM_16")
+PYB
+python3 tools/mixdown.py --out "$T/bal.wav" --target pop \
+  drums="$T/b_pop.wav" harmony="$T/quiet.wav" >/dev/null
+python3 - <<'PYC'
+import numpy as np, soundfile as sf
+y, _ = sf.read("/tmp/audio_smoke/bal.wav")
+S = np.abs(np.fft.rfft(y.mean(axis=1))); f = np.fft.rfftfreq(len(y), 1 / 44100)
+share = float(np.sum(S[(f > 280) & (f < 380)] ** 2)) / max(float(np.sum(S ** 2)), 1e-12)
+assert share > 1e-4, f"הסטם החלש נעלם (נתח {share:.2e}) — יישור העוצמה לא עבד"
+print(f"   \u2705 הסטם החלש שרד את המיקס (נתח אנרגיה {share*100:.2f}%)")
+PYC
+
+echo "── 7/7  שרשרת מלאה דרך mixdown.py — מבנה + יעד עוצמה אוטומטי"
+python3 tools/beat.py   --out "$T/m_drums.wav" --seconds 24 --bpm 126 --style house >/dev/null
+python3 tools/chords.py --out "$T/m_bass.wav"  --seconds 24 --bpm 126 --key Fm --prog "i VI III VII" \
+  --voice bass --sidechain four >/dev/null
 python3 tools/chords.py --out "$T/m_pad.wav"   --seconds 24 --bpm 126 --key Fm --prog "i VI III VII" \
-  --voice pad  --sidechain four --stereo >/dev/null
+  --voice pad  --octave 4 --sidechain four >/dev/null
 python3 tools/chords.py --out "$T/m_stab.wav"  --seconds 24 --bpm 126 --key Fm --prog "i VI III VII" \
-  --voice stab --bars 0.5 --sidechain four --stereo >/dev/null
-ffmpeg -v error -y -i "$T/m_drums.wav" -i "$T/m_pad.wav" -i "$T/m_stab.wav" \
-  -filter_complex "[0]volume=1.0[a];[1]volume=0.55[b];[2]volume=0.45[c];\
-[a][b][c]amix=inputs=3:normalize=0,volume=3.6,\
-alimiter=level_in=1:limit=0.66:attack=3:release=60:level=disabled,volume=0.93[o]" \
-  -map "[o]" "$T/mix.wav"
-python3 tools/loudness.py "$T/mix.wav" --target house
+  --voice stab --octave 5 --bars 0.5 --sidechain four >/dev/null
+python3 tools/mixdown.py --out "$T/mix.wav" --target house --bpm 126 --bars 4 \
+  --arrange "intro,build,drop,drop" \
+  drums="$T/m_drums.wav" bass="$T/m_bass.wav" harmony="$T/m_pad.wav" lead="$T/m_stab.wav"
+python3 tools/loudness.py "$T/mix.wav" --target house --balance
 
 echo
 echo "✓ כל בדיקות האודיו עברו. התוצרים: $T/"

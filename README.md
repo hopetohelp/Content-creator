@@ -37,9 +37,11 @@ bash tools/checkpoint.sh "מה נשמר"
 | `tools/heb_ass.py` | כתוביות עברית תקינות (כיוון RTL כפוי) |
 | `tools/rtl_probe.py` | שער רגרסיה ל-bidi, בהשוואת גליפים |
 | `tools/shot.js` | HTML → PNG 1920x1080 דרך Chromium |
+| `tools/band.py` | ליווי בכלים אמיתיים — 1138 סגנונות מוכנים + סאונדפונט |
 | `tools/beat.py` | ביט פרוצדורלי דטרמיניסטי — `--style rap/pop/house` |
 | `tools/chords.py` | הרמוניה ומלודיה פרוצדורליות (פד, פסנתר, סטאב, באס) |
-| `tools/loudness.py` | מד עוצמה BS.1770 + שער עובר/נכשל |
+| `tools/mixdown.py` | מיקס ומאסטר לסטמים + יעד עוצמה אוטומטי |
+| `tools/loudness.py` | מד עוצמה BS.1770 + `--balance` מול הפקה אמיתית |
 | `tools/tts.py` | Kokoro TTS מקומי (CPU) |
 
 ## בדיקות
