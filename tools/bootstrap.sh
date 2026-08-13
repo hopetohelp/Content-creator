@@ -12,7 +12,11 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
   fluidsynth fluid-soundfont-gm mma
 
 echo "── חבילות פייתון"
-pip3 install --break-system-packages -q faster-whisper python-bidi pillow numpy soundfile
+# 🔴 python-bidi הוסר במכוון (13.8.2026): הריפו אוסר להשתמש בו (CLAUDE.md פרק 5),
+#    הוא לא מיובא בשום קובץ, והתקנתו רק פיתתה סשנים לנסות אותו.
+# 🔴 faster-whisper הוסר: הסנכרון מגיע מחותמות הזמן של Lyria. אם בכל זאת יידרש
+#    זיהוי דיבור — `pip3 install --break-system-packages stable-ts` לפי מסמך 6.
+pip3 install --break-system-packages -q pillow numpy soundfile
 # torch מהאינדקס של CPU בלבד — ברירת המחדל גוררת ~3.5GB של CUDA שאין בו שום צורך
 pip3 install --break-system-packages -q torch --index-url https://download.pytorch.org/whl/cpu
 pip3 install --break-system-packages -q kokoro
