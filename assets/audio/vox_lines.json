@@ -1,0 +1,207 @@
+[
+ {
+  "id": "open1",
+  "text": "Ten percent battery. Yeah, I'll live.",
+  "style": "Say casually, bored and unimpressed, like it barely matters"
+ },
+ {
+  "id": "open2",
+  "text": "Ten percent tokens.",
+  "style": "Say casually, bored and unimpressed, like it barely matters"
+ },
+ {
+  "id": "open3",
+  "text": "Oh no.",
+  "style": "Say quietly with dawning dread, slowly"
+ },
+ {
+  "id": "v1l1",
+  "text": "Red bar creeping in the corner. Cool.",
+  "style": "Rap this dry and deadpan, completely unbothered, relaxed and casual"
+ },
+ {
+  "id": "v1l2",
+  "text": "Little pop-up telling me I'm low.",
+  "style": "Rap this dry and deadpan, completely unbothered, relaxed and casual"
+ },
+ {
+  "id": "v1l3",
+  "text": "Got a cable on the floor somewhere,",
+  "style": "Rap this dry and deadpan, completely unbothered, relaxed and casual"
+ },
+ {
+  "id": "v1l4",
+  "text": "got a power bank from years ago.",
+  "style": "Rap this dry and deadpan, completely unbothered, relaxed and casual"
+ },
+ {
+  "id": "v1l5",
+  "text": "Low power mode? Go ahead. Go slow.",
+  "style": "Rap this dry and deadpan, completely unbothered, relaxed and casual"
+ },
+ {
+  "id": "v1l6",
+  "text": "Dim it down to nothing, I don't care.",
+  "style": "Rap this dry and deadpan, completely unbothered, relaxed and casual"
+ },
+ {
+  "id": "v1l7",
+  "text": "Phone dies out at midnight. That's a Tuesday.",
+  "style": "Rap this dry and deadpan, completely unbothered, relaxed and casual"
+ },
+ {
+  "id": "h1l1",
+  "text": "Ten percent battery, I'll survive.",
+  "style": "Rap this confidently with punch and rhythm, chanting it"
+ },
+ {
+  "id": "h1l2",
+  "text": "Ten percent tokens, barely alive.",
+  "style": "Rap this confidently with punch and rhythm, chanting it"
+ },
+ {
+  "id": "v2l1",
+  "text": "Agent's cooking. Everything is building.",
+  "style": "Rap this with rising tension, faster and more anxious, quietly panicking"
+ },
+ {
+  "id": "v2l2",
+  "text": "Tests are green, the whole thing's clean.",
+  "style": "Rap this with rising tension, faster and more anxious, quietly panicking"
+ },
+ {
+  "id": "v2l3",
+  "text": "Little grey number in the corner of the screen,",
+  "style": "Rap this with rising tension, faster and more anxious, quietly panicking"
+ },
+ {
+  "id": "v2l4",
+  "text": "token budget: ten percent.",
+  "style": "Rap this with rising tension, faster and more anxious, quietly panicking"
+ },
+ {
+  "id": "v2l5",
+  "text": "Delete the explanation. Delete the please.",
+  "style": "Rap this with rising tension, faster and more anxious, quietly panicking"
+ },
+ {
+  "id": "v2l6",
+  "text": "Close nine tabs. I'm down to three.",
+  "style": "Rap this with rising tension, faster and more anxious, quietly panicking"
+ },
+ {
+  "id": "v2l7",
+  "text": "Every word I type is money leaving me.",
+  "style": "Rap this with rising tension, faster and more anxious, quietly panicking"
+ },
+ {
+  "id": "meme",
+  "text": "You can charge a phone. You can't charge a context window.",
+  "style": "Say this slowly and seriously, like stating a hard fact"
+ },
+ {
+  "id": "h2l1",
+  "text": "Ten percent battery, I'll survive.",
+  "style": "Shout this with high energy, loud and hyped, like a crowd chant"
+ },
+ {
+  "id": "h2l2",
+  "text": "Ten percent tokens, barely alive.",
+  "style": "Shout this with high energy, loud and hyped, like a crowd chant"
+ },
+ {
+  "id": "h2l3",
+  "text": "Phone can die right in my hand, I'm fine.",
+  "style": "Shout this with high energy, loud and hyped, like a crowd chant"
+ },
+ {
+  "id": "h2l4",
+  "text": "Take my tokens, take my life.",
+  "style": "Shout this with high energy, loud and hyped, like a crowd chant"
+ },
+ {
+  "id": "e1",
+  "text": "One percent. One prompt. One shot.",
+  "style": "Say with dramatic tension"
+ },
+ {
+  "id": "e2",
+  "text": "Fix bug pls. Enter.",
+  "style": "Say fast and clipped, like typing in a hurry"
+ },
+ {
+  "id": "e3",
+  "text": "It worked. Let's go!",
+  "style": "Shout with explosive joy, like winning a championship"
+ },
+ {
+  "id": "e4",
+  "text": "Anyway. My phone's at ninety.",
+  "style": "Say completely calm and normal, totally deadpan, like nothing happened"
+ },
+ {
+  "id": "ad_v1l1",
+  "text": "cool",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_v1l2",
+  "text": "I know",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_v1l4",
+  "text": "ago",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_v1l5",
+  "text": "go slow",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_v1l7",
+  "text": "Tuesday",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_h1l1",
+  "text": "survive",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_h1l2",
+  "text": "oh no",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_v2l1",
+  "text": "let's go",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_v2l4",
+  "text": "what",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_v2l7",
+  "text": "leaving",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_h2l1",
+  "text": "I'll survive",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_h2l2",
+  "text": "oh no",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ },
+ {
+  "id": "ad_h2l4",
+  "text": "take my life",
+  "style": "Say this as a short background rap ad-lib, low and quick"
+ }
+]
