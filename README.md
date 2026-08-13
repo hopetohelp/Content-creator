@@ -8,7 +8,7 @@
 | **[PROGRESS.md](PROGRESS.md)** | הלוח החי: מה הושלם, מה תפוס, מה הבא |
 | **[READY.md](READY.md)** | דוח המוכנות: מה נבחר, מה נפסל ולמה, סיכונים |
 | **[מסמכים/](מסמכים/)** | הנחיות הפרויקט + למה ההפקה בענן |
-| **[מחקר/](<מחקר/README.md>)** | מחקר טרנדים במוזיקה 2026 + הנחיות ליצירת ראפ, פופ ודאנס |
+| **[מסמכים/מחקר/](<מסמכים/מחקר/README.md>)** | מחקר טרנדים במוזיקה 2026 + הנחיות ליצירת ראפ, פופ ודאנס |
 | **[setup.log](setup.log)** | יומן מלא של ההקמה |
 
 ## סשן חדש — שלושה צעדים
@@ -37,7 +37,9 @@ bash tools/checkpoint.sh "מה נשמר"
 | `tools/heb_ass.py` | כתוביות עברית תקינות (כיוון RTL כפוי) |
 | `tools/rtl_probe.py` | שער רגרסיה ל-bidi, בהשוואת גליפים |
 | `tools/shot.js` | HTML → PNG 1920x1080 דרך Chromium |
-| `tools/beat.py` | ביט הִיפ-הופ פרוצדורלי, דטרמיניסטי |
+| `tools/beat.py` | ביט פרוצדורלי דטרמיניסטי — `--style rap/pop/house` |
+| `tools/chords.py` | הרמוניה ומלודיה פרוצדורליות (פד, פסנתר, סטאב, באס) |
+| `tools/loudness.py` | מד עוצמה BS.1770 + שער עובר/נכשל |
 | `tools/tts.py` | Kokoro TTS מקומי (CPU) |
 
 ## בדיקות
@@ -45,4 +47,5 @@ bash tools/checkpoint.sh "מה נשמר"
 ```bash
 python3 tools/rtl_probe.py Rubik   # שער העברית
 bash tests/smoke.sh                # שרשרת מלאה מקצה לקצה
+bash tests/audio_smoke.sh          # כלי האודיו: תבניות, אקורדים, עוצמה
 ```
