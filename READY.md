@@ -1,7 +1,6 @@
 # דוח מוכנות — סביבת הפקת קליפ מוזיקלי AI
 
-**תאריך:** 13.8.2026 · **ריפו:** `hopetohelp/content-creator` · **ענף:** `claude/ai-music-clip-setup-y2mq6s`
-**יומן מלא של כל צעד:** `setup.log` (225 שורות, חותמות זמן UTC)
+**תאריך:** 13.8.2026 · **ריפו:** `hopetohelp/content-creator`
 
 > **סביבת ההפקה: ענן (Ubuntu 24.04, 4 ליבות, 15GB, בלי GPU).**
 > הנימוק המלא, כולל המדידות שהכריעו: `מסמכים/3. למה הפקה בענן.md`.
@@ -45,27 +44,18 @@ ComfyUI לא הותקן — בלי GPU הוא רק היה מוסיף זמן, מ�
 
 ## 2. הכלים שנבחרו, והחלופות שנפסלו
 
-### וידאו — Chromium (Playwright) + ffmpeg
+**נבחרו:** `tools/shot.js` (HTML/CSS → PNG דרך Chromium — דטרמיניסטי, אפס תלות
+ברשת בזמן ההפקה, ובדיוק האסתטיקה של הקליפ) · ffmpeg 6.1.1 לתנועה (Ken Burns,
+זום, whip pan, glitch, RGB split, shake) · `tools/tts.py` (Kokoro, נבדק:
+3.00s, 24kHz, `mean=-18.3dB`) · `tools/beat.py` (ביט מסונתז, 150 BPM, דטרמיניסטי).
 
-| | הכלי | למה |
-|---|---|---|
-| ✅ **נבחר** | `tools/shot.js` — HTML/CSS → PNG דרך Chromium | דטרמיניסטי, אפס תלות ברשת בזמן ההפקה, ובדיוק האסתטיקה של הקליפ (טרמינל/IDE/טלפון/התראות). Chromium כבר מותקן ב-`/opt/pw-browsers`. |
-| ✅ **נבחר** | ffmpeg 6.1.1 לתנועה | Ken Burns, זום, whip pan, glitch, RGB split, shake — הכל בפילטרים. |
-| ❌ נפסל | ComfyUI + Wan 2.2 / Flux (שכבות A/B) | דורש VRAM. אין. |
-| ❌ נפסל | Flux דרך Hugging Face Spaces ציבורי | תלוי בשירות חיצוני, במכסות ובזמינות — הסיכון הגבוה ביותר להיתקעות בהרצה לא מפוקחת. |
-| ❌ נפסל | Stable Diffusion מקומי על CPU | דקות ארוכות לתמונה על 4 ליבות. לא סביר לעשרות שוטים. |
+**נפסלו, כולם מאותה סיבה — אין GPU:** ComfyUI + Wan 2.2 / Flux · Stable Diffusion
+מקומי (דקות ארוכות לתמונה על 4 ליבות) · ACE-Step (23 תלויות, דורש GPU בפועל) ·
+YuE. **ובנוסף:** Flux דרך Hugging Face Spaces ציבורי נפסל כי הוא תלוי בשירות
+חיצוני ובמכסות — הסיכון הגבוה ביותר להיתקעות בהרצה לא מפוקחת.
 
-### אודיו — Kokoro TTS + ביט פרוצדורלי
-
-| | הכלי | למה |
-|---|---|---|
-| ✅ **נבחר** | `tools/tts.py` — Kokoro TTS 82M, קול `am_michael` | רץ על CPU, Apache 2.0, בלי מפתח ובלי מכסה. נבדק: 3.00s, 24kHz, `mean=-18.3dB`. |
-| ✅ **נבחר** | `tools/beat.py` — ביט מסונתז ב-numpy | Kokoro נותן קול, לא ביט. 808 עם גלישת תדר, סנר, האטס, סאב. 150 BPM. דטרמיניסטי לחלוטין, אפס תלות. |
-| ❌ נפסל | ACE-Step | מודל דיפוזיה. 23 תלויות: torch, diffusers, transformers, spacy, gradio. דורש GPU בפועל. |
-| ❌ נפסל | YuE (עדיפות 2) | כבד מדי — דורש GPU, כמו ACE-Step. |
-
-> **מתועד:** "שירה" בפועל תהיה **ראפ כדיבור קצבי מעל ביט**. אין מנוע שירה
-> אמיתי שרץ על CPU בתקציב $0.
+> **מתועד:** בנתיב הזה "שירה" היא **ראפ כדיבור קצבי מעל ביט**. אין מנוע שירה
+> אמיתי שרץ על CPU. *(מאז אושר מסלול B — השירה מגיעה מ-Lyria, וזה נשאר כגיבוי.)*
 
 ---
 
@@ -93,8 +83,8 @@ ffmpeg כאן נבנה עם `--enable-libass --enable-libfribidi --enable-libhar
 | **python-bidi** `get_display()` | `.` | `ר` | ❌ **מזיק** — היפוך כפול |
 
 > 🔴 **python-bidi נפסל בראיה מדודה.** הוא מיועד לרנדרר שאין לו bidi. כאן יש,
-> ולכן הוא הופך פעם שנייה והעברית נקראת הפוך. הוא מותקן בסביבה אבל
-> **אין להשתמש בו** — התיעוד ב-`CLAUDE.md` וב-`tools/heb_ass.py`.
+> ולכן הוא הופך פעם שנייה והעברית נקראת הפוך.
+> **הוסר לגמרי מ-`bootstrap.sh` ב-13.8.2026** — אין טעם להתקין ספרייה אסורה.
 
 כל שורת כתובית נכתבת דרך `tools/heb_ass.py`, שעוטף אוטומטית ומבריח תווים.
 
@@ -102,24 +92,17 @@ ffmpeg כאן נבנה עם `--enable-libass --enable-libfribidi --enable-libhar
 
 ## 4. שרתי MCP — 5/5 מחוברים
 
-| שרת | סטטוס |
-|---|---|
-| `memory` | ✅ Connected |
-| `seq` (sequential-thinking) | ✅ Connected |
-| `fetch` | ✅ Connected — **אחרי תיקון** |
-| `context7` | ✅ Connected |
-| `playwright` | ✅ Connected |
-| `comfy-mcp` | לא הותקן — אין ComfyUI. הקהילתי `artokun/comfyui-mcp` לא נשקל (ממצא אבטחה). |
+חמשת השרתים מוגדרים ב-`.mcp.json` שבריפו: `memory` · `seq` · `fetch` ·
+`context7` · `playwright`. ‏`comfy-mcp` לא הותקן (אין ComfyUI; הקהילתי
+`artokun/comfyui-mcp` לא נשקל בגלל ממצא אבטחה).
 
-**`fetch` נפל ותוקן:** `ImportError: cannot import name 'McpError'`. השורש במעלה
-הזרם — החבילה מצהירה `mcp>=1.1.3` ו-uv פתר ל-`mcp 2.0.0` שבו הסמל הוזז.
-התיקון: `uvx --with "mcp<2" --from mcp-server-fetch mcp-server-fetch`.
-
-**שני שיפורי עמידות שלא נתבקשו אבל היו הכרחיים:**
-1. השרתים הוגדרו ב-`--scope project` → `.mcp.json` **בתוך הריפו**. ברירת המחדל
-   כותבת ל-`/root/.claude.json` המקומי, והקונטיינר החד-פעמי היה מוחק את כולם.
-2. שרתי `.mcp.json` עולים כ-"Pending approval" — שער אינטראקטיבי שהיה עוצר
-   בדיוק את הסשן הלא-מפוקח. נוטרל ב-`enableAllProjectMcpServers`.
+**שלושה דברים שנלמדו בדרך הקשה, וכולם כבר צרובים בקבצים:**
+1. **`fetch` נפל** על `ImportError: McpError` — החבילה מצהירה `mcp>=1.1.3` ו-uv
+   פתר ל-`mcp 2.0.0` שבו הסמל הוזז. התיקון (`--with "mcp<2"`) יושב ב-`.mcp.json`.
+2. **הגדרה ב-`--scope project`** ⇒ `.mcp.json` בתוך הריפו. ברירת המחדל כותבת
+   ל-`/root/.claude.json`, והקונטיינר החד-פעמי היה מוחק את כולם.
+3. **`enableAllProjectMcpServers`** ב-`.claude/settings.json` — בלעדיו השרתים
+   עולים כ-"Pending approval", שער אינטראקטיבי שעוצר סשן לא-מפוקח.
 
 ---
 
