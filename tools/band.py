@@ -80,7 +80,13 @@ def chord_name(numeral, root_pc, scale):
     return NAMES[root] + q
 
 
-def build(style, bpm, key, prog, repeat, sf2, gain=0.9, seed=None):
+def build(style, bpm, key, prog, repeat, sf2, gain=0.9, seed=None, mute=()):
+    """mute: שמות מסלולי MMA להשתקה, למשל ('Drum','Bass').
+
+    למה זה קיים: הסגנונות של MMA כוללים תופים ובאס משלהם. בקליפ הזה
+    התופים וה-808 מגיעים מ-`beat.py` (ב-GM אין 808 מודרני), ולכן מ-`band.py`
+    רוצים **רק את הכלים האקוסטיים** — אחרת שתי ערכות תופים מתנגשות.
+    """
     for exe in ("mma", "fluidsynth"):
         if not shutil.which(exe):
             raise SystemExit(f"⛔ '{exe}' לא מותקן. apt-get install -y fluidsynth fluid-soundfont-gm mma")
@@ -90,6 +96,8 @@ def build(style, bpm, key, prog, repeat, sf2, gain=0.9, seed=None):
     src = os.path.join(tmp, "song.mma")
     with open(src, "w") as f:
         f.write(f"Tempo {bpm}\nGroove {style}\n")
+        for trk in mute:
+            f.write(f"{trk} Volume 0\n")
         bar = 1
         for _ in range(repeat):
             for num in numerals:
@@ -125,6 +133,9 @@ def main():
     p.add_argument("--gain", type=float, default=0.9)
     p.add_argument("--sf2", default=None)
     p.add_argument("--list", action="store_true", help="רשימת הסגנונות המוכנים")
+    p.add_argument("--mute", nargs="*", default=[],
+                   help="מסלולי MMA להשתקה, למשל: --mute Drum Bass "
+                        "(התופים וה-808 מגיעים מ-beat.py)")
     a = p.parse_args()
 
     if a.list:
@@ -136,10 +147,12 @@ def main():
     if not a.out:
         p.error("צריך --out (או --list)")
 
-    y, sr = build(a.style, a.bpm, a.key, a.prog, a.repeat, a.sf2 or find_sf2(), a.gain)
+    y, sr = build(a.style, a.bpm, a.key, a.prog, a.repeat, a.sf2 or find_sf2(), a.gain,
+                  mute=a.mute)
     sf.write(a.out, y, sr, subtype="PCM_16")
     print(f"נכתב: {a.out}  {len(y)/sr:.1f}s @ {a.bpm} BPM, {a.key}, "
-          f"סגנון={a.style}, רצף={a.prog}×{a.repeat}")
+          f"סגנון={a.style}, רצף={a.prog}×{a.repeat}"
+          + (f", מושתקים: {' '.join(a.mute)}" if a.mute else ""))
 
 
 if __name__ == "__main__":
