@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "title": "Ten Percent",
+    "bpm": 150,
+    "bar_seconds": 1.6,
+    "line_bars": 2,
+    "total_seconds": 89.6,
+    "note": "נגזר מ-lyrics.md. en = טקסט ל-TTS. he = כרטיס כתובית עברית. gfx = שכבת גרפיקה נפרדת, לעולם לא בתוך he."
+  },
+  "lines": [
+    { "id": "open1",  "start": 0.0,  "end": 3.2,  "section": "open",   "en": "Ten percent battery. Yeah, I'll live.", "he": "עשרה אחוז סוללה. יאללה, נשרוד.", "adlib": null,        "gfx": "10% BATTERY" },
+    { "id": "open2",  "start": 3.2,  "end": 6.4,  "section": "open",   "en": "Ten percent tokens.",                  "he": "עשרה אחוז טוקנים.",             "adlib": null,        "gfx": "10% TOKENS" },
+    { "id": "open3",  "start": 6.4,  "end": 8.0,  "section": "open",   "en": "Oh no.",                                "he": "אוי לא.",                       "adlib": null,        "gfx": null },
+
+    { "id": "v1l1",   "start": 9.6,  "end": 12.8, "section": "verse1", "en": "Red bar creeping in the corner. Cool.",  "he": "פס אדום זוחל בפינה. סבבה.",     "adlib": "cool",      "gfx": null },
+    { "id": "v1l2",   "start": 12.8, "end": 16.0, "section": "verse1", "en": "Little pop-up telling me I'm low.",      "he": "הודעה קטנה אומרת שאני נגמר.",  "adlib": "I know",    "gfx": null },
+    { "id": "v1l3",   "start": 16.0, "end": 19.2, "section": "verse1", "en": "Got a cable on the floor somewhere,",    "he": "יש איזה כבל על הרצפה,",         "adlib": null,        "gfx": null },
+    { "id": "v1l4",   "start": 19.2, "end": 22.4, "section": "verse1", "en": "got a power bank from years ago.",       "he": "ויש מטען נייד מלפני שנים.",     "adlib": "ago",       "gfx": null },
+    { "id": "v1l5",   "start": 22.4, "end": 25.6, "section": "verse1", "en": "Low power mode? Go ahead. Go slow.",     "he": "מצב חיסכון? בבקשה. לאט לאט.",  "adlib": "go slow",   "gfx": null },
+    { "id": "v1l6",   "start": 25.6, "end": 28.8, "section": "verse1", "en": "Dim it down to nothing, I don't care.",  "he": "תוריד את הבהירות, לא אכפת לי.", "adlib": null,       "gfx": null },
+    { "id": "v1l7",   "start": 28.8, "end": 32.0, "section": "verse1", "en": "Phone dies out at midnight. That's a Tuesday.", "he": "הטלפון ימות בחצות.\nזה לא משבר, זה יום רגיל.", "adlib": "Tuesday", "gfx": null },
+
+    { "id": "h1l1",   "start": 32.0, "end": 35.2, "section": "hook",   "en": "Ten percent battery, I'll survive.",     "he": "עשרה אחוז סוללה — אני אשרוד.",  "adlib": "survive",   "gfx": "10%" },
+    { "id": "h1l2",   "start": 35.2, "end": 38.4, "section": "hook",   "en": "Ten percent tokens, barely alive.",      "he": "עשרה אחוז טוקנים — בקושי חי.",  "adlib": "oh no",     "gfx": "10%" },
+
+    { "id": "v2l1",   "start": 38.4, "end": 41.6, "section": "verse2", "en": "Agent's cooking. Everything is building.", "he": "הסוכן דוהר. הכל נבנה.",         "adlib": "let's go",  "gfx": null },
+    { "id": "v2l2",   "start": 41.6, "end": 44.8, "section": "verse2", "en": "Tests are green, the whole thing's clean.", "he": "הבדיקות ירוקות, הכל נקי.",    "adlib": null,        "gfx": null },
+    { "id": "v2l3",   "start": 44.8, "end": 48.0, "section": "verse2", "en": "Little grey number in the corner of the screen,", "he": "מספר אפור קטן בפינת המסך —", "adlib": null,   "gfx": null },
+    { "id": "v2l4",   "start": 48.0, "end": 51.2, "section": "verse2", "en": "token budget: ten percent.",             "he": "תקציב טוקנים: עשרה אחוז.",     "adlib": "what",      "gfx": "TOKEN BUDGET: 10%" },
+    { "id": "v2l5",   "start": 51.2, "end": 54.4, "section": "verse2", "en": "Delete the explanation. Delete the please.", "he": "מוחק את ההסבר. מוחק את הבבקשה.", "adlib": null,    "gfx": null },
+    { "id": "v2l6",   "start": 54.4, "end": 57.6, "section": "verse2", "en": "Close nine tabs. I'm down to three.",    "he": "סוגר תשעה טאבים. נשארו שלושה.", "adlib": null,        "gfx": null },
+    { "id": "v2l7",   "start": 57.6, "end": 60.8, "section": "verse2", "en": "Every word I type is money leaving me.", "he": "כל מילה שאני כותב עולה לי כסף.", "adlib": "leaving",   "gfx": null },
+
+    { "id": "meme",   "start": 60.8, "end": 64.0, "section": "meme",   "en": "You can charge a phone. You can't charge a context window.", "he": "טלפון אפשר להטעין.\nקונטקסט אי אפשר.", "adlib": null, "gfx": "MEMECARD" },
+
+    { "id": "h2l1",   "start": 65.6, "end": 68.8, "section": "chorus", "en": "Ten percent battery, I'll survive.",     "he": "עשרה אחוז סוללה — אני אשרוד.",  "adlib": "I'll survive", "gfx": "10%" },
+    { "id": "h2l2",   "start": 68.8, "end": 72.0, "section": "chorus", "en": "Ten percent tokens, barely alive.",      "he": "עשרה אחוז טוקנים — בקושי חי.",  "adlib": "oh no",     "gfx": "10%" },
+    { "id": "h2l3",   "start": 72.0, "end": 75.2, "section": "chorus", "en": "Phone can die right in my hand, I'm fine.", "he": "שהטלפון ימות לי ביד, לא אכפת.", "adlib": null,     "gfx": null },
+    { "id": "h2l4",   "start": 75.2, "end": 78.4, "section": "chorus", "en": "Take my tokens, take my life.",          "he": "קחו לי את הטוקנים, קחו לי הכל.", "adlib": "take my life", "gfx": null },
+
+    { "id": "e1",     "start": 78.4, "end": 81.6, "section": "end",    "en": "One percent. One prompt. One shot.",     "he": "אחוז אחד. פרומפט אחד.\nהזדמנות אחת.", "adlib": null,   "gfx": "1%" },
+    { "id": "e2",     "start": 81.6, "end": 83.2, "section": "end",    "en": "Fix bug pls. Enter.",                    "he": "כותב: תקן באג בבקשה. אנטר.",   "adlib": null,        "gfx": "PROMPT" },
+    { "id": "e3",     "start": 84.8, "end": 86.4, "section": "end",    "en": "It worked. Let's go!",                   "he": "זה עבד! יש!",                   "adlib": null,        "gfx": null },
+    { "id": "e4",     "start": 87.2, "end": 89.6, "section": "end",    "en": "Anyway. My phone's at ninety.",          "he": "בכל מקרה. הטלפון שלי על תשעים.", "adlib": null,       "gfx": "0% TOKENS" }
+  ]
+}

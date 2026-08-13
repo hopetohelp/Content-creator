@@ -21,7 +21,7 @@ STEP="${1:?צריך מספר שלב. דוגמה: bash tools/claim.sh 8}"
 MODE="${2:-claim}"; NOTE="${3:-}"
 SID="$(session_id)"; TS="$(now_utc)"
 
-$GIT pull --rebase --autostash -q origin main 2>/dev/null || true
+$GIT pull --rebase --autostash -q origin "$CHECKPOINT_BRANCH" 2>/dev/null || true
 
 case "$MODE" in
   --done)    STATUS="✅";        VERB="הושלם" ;;
