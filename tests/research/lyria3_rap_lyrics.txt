@@ -1,0 +1,8 @@
+[0.0:] Screen glows dim, a familiar dread
+[3.2:] Just a little warning that my power's in the red
+[6.4:] Ten on the battery? Bet.
+[9.6:] Ten on the tokens? Dead.
+[12.8:] AI's thinkin' got expensive, now my whole career's a mess
+[16.0:] Gotta optimize these prompts or I'm failin' my progress test
+[19.2:] Ten on the battery? Bet.
+[22.4:25.6] Ten on the tokens? Dead.
