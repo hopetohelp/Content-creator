@@ -1,11 +1,11 @@
-# תוצרי ביניים כבדים — לא נכנסים לגיט
-output/*.mp4
-output/*.mov
-assets/shots/*.png
-assets/audio/*.wav
-!assets/audio/.gitkeep
-!assets/shots/.gitkeep
-logs/*.log
-!logs/.gitkeep
+# הסביבה חד-פעמית: כל תוצר שלא נדחף לריפו נעלם עם הקונטיינר.
+# לכן שוטים, אודיו וקטעי וידאו **כן** נשמרים בגיט — הם ההתקדמות עצמה.
+
 __pycache__/
 *.pyc
+.DS_Store
+
+# קבצי עבודה זמניים בלבד
+*.tmp
+*.part
+tmp/
