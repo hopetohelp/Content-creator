@@ -6,6 +6,10 @@ Kokoro = 82M פרמטרים, Apache 2.0, בלי מפתח API ובלי מכסה.
 
 השירה באנגלית (אילוץ הפרויקט). הכתוביות בעברית נוצרות בנפרד ב-tools/heb_ass.py.
 
+🔴 איסור גורף: אין להשתמש בקול אישה — לא בקליפ, ולא בבדיקה, בדוגמה, במדריך
+או במחקר בריפו. הכלי אוכף זאת בעצמו ונכשל על מזהה-קול נשי (ראו assert_male).
+במזהי Kokoro האות השנייה מציינת מגדר: m=גבר, f=אישה (am_michael, af_bella...).
+
 שימוש:
   python3 tools/tts.py --text "Ten percent left..." --out assets/audio/vox.wav
   python3 tools/tts.py --text "..." --voice am_adam --speed 1.05 --out out.wav
@@ -16,7 +20,25 @@ import numpy as np, soundfile as sf
 
 SR = 24000   # Kokoro פולט 24kHz
 
+def assert_male(voice: str) -> None:
+    """חוסם קול אישה. אילוץ קשיח של הפרויקט — ראו CLAUDE.md פרק 1.
+
+    מזהי Kokoro בנויים <שפה><מגדר>_<שם>: האות הראשונה שפה, השנייה מגדר.
+    m=גבר, f=אישה. כל מזהה שאינו גברי מפורשות נדחה — ברירת המחדל היא סירוב,
+    כדי שמזהה בפורמט לא מוכר לא יחליק פנימה בטעות.
+    """
+    v = (voice or "").strip().lower()
+    if len(v) >= 2 and v[1] == "m":
+        return
+    raise SystemExit(
+        f"⛔ הקול '{voice}' נדחה.\n"
+        "   איסור גורף בפרויקט: אין להשתמש בקול אישה בשום תוצר — כולל בדיקות,\n"
+        "   דוגמאות, מדריכים ומחקרים. ראו CLAUDE.md פרק 1.\n"
+        "   קולות גבריים זמינים: am_michael, am_adam, bm_george, bm_lewis."
+    )
+
 def synth(text, voice="am_michael", speed=1.0, lang="a"):
+    assert_male(voice)
     from kokoro import KPipeline
     pipe = KPipeline(lang_code=lang, repo_id="hexgrad/Kokoro-82M")
     chunks = []
