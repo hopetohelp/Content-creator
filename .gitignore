@@ -1,0 +1,11 @@
+# תוצרי ביניים כבדים — לא נכנסים לגיט
+output/*.mp4
+output/*.mov
+assets/shots/*.png
+assets/audio/*.wav
+!assets/audio/.gitkeep
+!assets/shots/.gitkeep
+logs/*.log
+!logs/.gitkeep
+__pycache__/
+*.pyc
