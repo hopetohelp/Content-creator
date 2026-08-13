@@ -9,3 +9,6 @@ __pycache__/
 *.tmp
 *.part
 tmp/
+
+# תוצרי בדיקת כלי היוטיוב — נוצרים מחדש בכל הרצה של tests/yt_smoke.sh
+tests/yt_out/
