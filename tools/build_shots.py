@@ -63,7 +63,7 @@ def shots():
         desk() + phone(745, 110, f'''{battery(10, RED)}
           <div style="font-size:86px;font-weight:800;color:{RED}">10%</div>
           <div style="font-size:30px;color:{DIM};letter-spacing:.16em">BATTERY</div>''')
-        + gfx("10% BATTERY", 560, 900, "mid", "rd"),
+        + gfx("10% BATTERY", 560, 726, "mid", "rd"),
         "push_in", "טלפון: עשרה אחוז סוללה")
 
     add("s02", 3.2, 6.4,
@@ -76,7 +76,7 @@ def shots():
           <div style="margin-top:14px">{meter(10, RED, 1180)}</div>
           <div style="margin-top:20px;font-size:70px;font-weight:800;color:{RED}">10% remaining</div>''',
           accent=RED)
-        + gfx("10% TOKENS", 560, 930, "mid", "rd"),
+        + gfx("10% TOKENS", 560, 748, "mid", "rd"),
         "push_in", "מסך: עשרה אחוז טוקנים")
 
     add("s03", 6.4, 8.0,
@@ -218,15 +218,22 @@ def shots():
         ]), accent=GREEN),
         "ken_right", "כל הבדיקות ירוקות")
 
+    # החלון ממולא עד למטה בכוונה: הזום נוחת בפינה הימנית-תחתונה שלו, ופאנל
+    # ריק שם נותן פריים שחור — נמדד ב-blackdetect וזה נכשל.
     add("s16", 44.8, 48.0,
         desk() + win(210, 170, 1500, 740, "main.py — agent session", code_lines([
+            ("c-gr", "    for f in files:"),
+            ("c-gr", "        f.rewrite(plan[f])"),
             ("c-gr", "    return commit(files)"),
-            ("c-gr", "▸ 41/41 done"),
-            ("c-dim", ""), ("c-dim", ""),
-        ])) + f'''<div style="position:absolute;left:1290px;top:820px;font-size:29px;
-          color:#4b5365;z-index:40">tokens 10%</div>
-        <div style="position:absolute;left:1258px;top:806px;width:250px;height:62px;
-          border:2px solid {AMBER};border-radius:10px;z-index:39;opacity:.55"></div>''',
+            ("c-dim", ""),
+            ("c-gr", "▸ agent: 41/41 files done"),
+            ("c-gr", "▸ tests: 96 passed"),
+            ("c-dim", "▸ writing summary…"),
+        ])) + f'''<div style="position:absolute;left:1250px;top:790px;font-size:31px;
+          color:#7f8a9e;z-index:40">tokens 10%</div>
+        <div style="position:absolute;left:1216px;top:774px;width:266px;height:66px;
+          border:2px solid {AMBER};border-radius:10px;z-index:39;opacity:.75;
+          box-shadow:0 0 40px rgba(255,179,71,.28)"></div>''',
         "zoom_corner", "מספר אפור קטן בפינה")
 
     add("s17", 48.0, 51.2,
@@ -284,10 +291,21 @@ def shots():
             charge a context window.</span></div>''',
         "hold", "שורת המם")
 
+    # תיבת הדממה. כהה מאוד — אבל **לא שחורה**: פריים שחור באמצע קליפ נקרא
+    # אצל הצופה כתקלה, ו-blackdetect מסמן אותו ככישלון. הסמן והמסכים
+    # הכבויים מוכיחים שזה שוט מכוון.
     add("s22", 64.0, 65.6,
-        f'''<div style="position:absolute;inset:0;background:#040407"></div>
-        <div style="position:absolute;left:930px;top:520px;width:22px;height:52px;
-          background:{CYAN};opacity:.85;z-index:30;box-shadow:0 0 30px {CYAN}"></div>''',
+        f'''<div style="position:absolute;inset:0;background:#07070c"></div>
+        <div style="position:absolute;left:0;top:640px;width:1920px;height:440px;
+          background:linear-gradient(180deg,#0e1119,#08090e);z-index:5"></div>
+        <div style="position:absolute;left:120px;top:250px;width:520px;height:330px;
+          border-radius:10px;background:#0d1119;border:2px solid #222839;z-index:6"></div>
+        <div style="position:absolute;left:1290px;top:250px;width:520px;height:330px;
+          border-radius:10px;background:#0d1119;border:2px solid #222839;z-index:6"></div>
+        <div style="position:absolute;left:836px;top:404px;font-size:38px;
+          color:#6f7a8f;z-index:31;letter-spacing:.12em">_</div>
+        <div style="position:absolute;left:948px;top:388px;width:20px;height:54px;
+          background:{CYAN};opacity:.95;z-index:32;box-shadow:0 0 46px {CYAN}"></div>''',
         "hold", "דממה מוחלטת")
 
     # ── פזמון שיא — חיתוכים מהירים ──────────────────────────────────────────

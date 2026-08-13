@@ -44,6 +44,42 @@ def probe(path, entries, stream=None):
     return sh(cmd).stdout.split()
 
 
+BRIGHT_LUMA = 60          # מעליו פיקסל נחשב "תוכן", לא רקע חדר חשוך
+MIN_BRIGHT_RATIO = 0.0004  # 0.04% מהפריים — סמן בודד עובר, פריים ריק לא
+MIN_PEAK = 80
+
+
+def _frame_stats(video, fps=2.0, size=320):
+    """מחזיר [(זמן, שיא לומה, שיעור פיקסלים בהירים)] לפריימים דגומים."""
+    import numpy as np
+    from PIL import Image
+    with tempfile.TemporaryDirectory() as td:
+        sh(["ffmpeg", "-v", "error", "-i", video, "-vf",
+            f"fps={fps},scale={size}:-1", os.path.join(td, "f%05d.png"), "-y"])
+        out = []
+        for i, fn in enumerate(sorted(os.listdir(td))):
+            a = np.asarray(Image.open(os.path.join(td, fn)).convert("L"), dtype=float)
+            out.append((i / fps, float(a.max()), float((a > BRIGHT_LUMA).mean())))
+        return out
+
+
+def frame_deadness(video):
+    """זמני פריימים שאין בהם תוכן בהיר כלל. כולל אימות עצמי על פריים שחור."""
+    # 🔑 בקרה: פריים שחור אמיתי חייב להיתפס. בדיקה שלא תופסת אותו חסרת ערך.
+    with tempfile.TemporaryDirectory() as td:
+        blk = os.path.join(td, "black.mp4")
+        sh(["ffmpeg", "-v", "error", "-f", "lavfi", "-i",
+            "color=c=black:s=320x180:d=1:r=2", "-pix_fmt", "yuv420p", blk, "-y"])
+        ctrl = _frame_stats(blk)
+        if not ctrl or any(p >= MIN_PEAK or r >= MIN_BRIGHT_RATIO for _, p, r in ctrl):
+            raise SystemExit("⛔ הבדיקה פגומה: גלאי הפריימים המתים לא זיהה פריים שחור מלא.")
+
+    stats = _frame_stats(video)
+    dead = [t for t, peak, ratio in stats
+            if peak < MIN_PEAK and ratio < MIN_BRIGHT_RATIO]
+    return dead, len(stats)
+
+
 def judge_frame(path, key, retries=4):
     b64 = base64.b64encode(open(path, "rb").read()).decode("ascii")
     body = json.dumps({"contents": [{"parts": [
@@ -92,13 +128,18 @@ def main():
     check(len(v) > 2 and (v[1], v[2]) == ("1920", "1080"), "רזולוציה 1920x1080",
           f"{v[1]}x{v[2]}" if len(v) > 2 else "?")
 
-    # פריימים שחורים — כישלון גם אם ffmpeg החזיר 0
-    bl = sh(["ffmpeg", "-hide_banner", "-i", a.video, "-vf",
-             "blackdetect=d=0.30:pix_th=0.10", "-f", "null", "-"]).stderr
-    blacks = re.findall(r"black_start:([\d.]+) black_end:([\d.]+)", bl)
-    # 0% TOKENS יושב על רקע כמעט שחור בסוף — חתך מכוון, לא תקלה
-    real = [(s, e) for s, e in blacks if float(s) < 86.0]
-    check(not real, "אין פריימים שחורים", f"{len(blacks)} קטעים כהים, מתוכם {len(real)} לא מכוונים")
+    # ── פריימים מתים ──
+    # 🔴 **לא להשתמש כאן ב-blackdetect.** נמדד: הוא סימן ככישלון גם את השוט
+    # שבו הזום נוחת על תג "tokens 10%" קריא לגמרי, וגם את תיבת הדממה שבה
+    # רואים שני מסכים, שולחן וסמן. הסיבה: ברירת המחדל שלו היא "98% מהפיקסלים
+    # מתחת ללומה 25", והקליפ הזה **כהה בכוונה** — התוכן חי בשטח קטן ובהיר
+    # בתוך חדר חשוך. הבדיקה הייתה פגומה, לא התוצר. (CLAUDE.md פרק 6 — זו
+    # הפעם החמישית בריפו הזה.)
+    #
+    # מה שבאמת מגדיר פריים מת: **אין בו תוכן בהיר בכלל.** את זה מודדים.
+    dead, checked = frame_deadness(a.video)
+    check(not dead, f"אין פריימים מתים ({checked} פריימים נמדדו)",
+          f"{len(dead)} חשודים" + (f" ב-{dead[0]:.1f}s" if dead else ""))
 
     # אודיו לא שקט
     vd = sh(["ffmpeg", "-hide_banner", "-i", a.video, "-af", "volumedetect",
