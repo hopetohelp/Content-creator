@@ -1,10 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""fetch_image.py — תמונות ריאליסטיות מ-Pollinations. חינם, בלי מפתח, בלי חשבון.
+"""fetch_image.py — תמונות מ-Pollinations. חינם, בלי מפתח, בלי חשבון.
 
-**למה זה הנתיב במסלול A:** תמונות Gemini ו-Veo עולות כסף אמיתי (CLAUDE.md
-פרק 1), ו-Cloudflare דורש `CF_API_TOKEN` שאינו בסביבה. Pollinations הוא
-היחיד שנותן תמונה פוטוריאליסטית **ב-$0 ובלי הרשמה**.
+🔴 **הכלי הזה אינו הנתיב המאושר. לא להשתמש בו בלי לקרוא את הפסקה הזאת.**
+
+הוא נכתב כשב-`CLAUDE.md` היה כתוב "מסלול A" (‏$0, בלי תמונות בתשלום).
+**בינתיים main השתנה:** הבעלים אישר **מסלול B**, ובדיקה עצמאית שם מדדה
+ש-Pollinations **מחזיר סגנון ציורי ב-1024×576 ומתעלם מהפרמטרים** — כלומר
+אינו עומד בדרישת "תמונות ריאליסטיות, צילום ולא ציור". המקור המאושר הוא
+`gemini-3.1-flash-image` (Nano Banana). ראו סעיף הוויזואליה ב-`CLAUDE.md`.
+
+הכלי נשמר כגיבוי בלבד — למקרה שאין תקציב או שאין גישה ל-Gemini.
+התוצרים שלו יושבים ב-`assets/stills/` ו**אינם מאושרים לקליפ**.
+
+**מה בכל זאת נמדד כאן ושווה לקחת לכלי הבא:** סדר הרכיבים בפרומפט אינו
+שרירותי. כשההבעה מופיעה אחרי בלוק הזהות והסגנון, המודל מתעלם ממנה ומחזיר
+פורטרט ניטרלי; כשהיא ראשונה, היא נתפסת. אותו דבר לגבי הסביבה — בלי משפט
+מפורש על "חדר חשוך בלילה" מתקבל פורטרט אולפן על רקע בהיר.
 
 ⚠️ **נמדד:** הוא מחזיר 1024×576 גם כשמבקשים 1920×1080. הכלי מגדיל בעצמו
 ל-Full HD ב-ffmpeg. אל תסמכו על הרוחב שביקשתם.
@@ -28,23 +40,27 @@ BASE = "https://image.pollinations.ai/prompt/"
 W, H = 1920, 1080
 
 # בלוק הזהות — **זהה מילה במילה בכל שוט**. זו נעילת הדמות.
-IDENTITY = ("a 29 year old american man, short messy dark brown hair, "
-            "thick black square-framed glasses, light stubble, "
-            "wearing a charcoal grey zip-up hoodie over a black t-shirt")
+IDENTITY = ("he wears thick black-framed glasses and a dark grey hoodie, "
+            "short messy dark hair, light stubble, late twenties")
+
+# הסביבה. **נמדד:** בלי המשפט הזה במפורש Flux מחזיר פורטרט אולפן על רקע בהיר
+# במקום חדר מפתחים חשוך. "cinematic film still" לבדו לא מספיק.
+ENVIRONMENT = ("he sits in a completely dark room at night, lit only by the blue "
+               "glow of computer monitors behind him, dark background, night")
 
 # האילוץ הקשיח של הפרויקט, בכל פרומפט
 NEGATIVE = ("male only, no women, no female characters, no background people, "
             "not a caricature, no text, no watermark")
 
-LOOK = ("cinematic film still, moody low-key lighting, dark room lit only by "
-        "computer monitor glow, cyan and magenta rim light, shallow depth of "
-        "field, 35mm, photorealistic, high detail")
+LOOK = "photorealistic photo, high detail, 35mm"
 
 
 def build_prompt(scene, with_identity=True):
+    """סדר הרכיבים אינו שרירותי. **נמדד:** כשההבעה מופיעה אחרי בלוק הזהות
+    והסגנון, Flux מתעלם ממנה ומחזיר פורטרט ניטרלי. ההבעה חייבת להיות ראשונה."""
     parts = [scene]
     if with_identity:
-        parts.append(IDENTITY)
+        parts += [IDENTITY, ENVIRONMENT]
     parts += [LOOK, NEGATIVE]
     return ", ".join(parts)
 

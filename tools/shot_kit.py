@@ -13,6 +13,7 @@
 `gfx`, ו**לעולם לא בתוך שורת כתובית עברית**: ערבוב לטיני-עברי שובר bidi
 ו-`10%` מתהפך ל-`%10`. ראו CLAUDE.md פרק 5.
 """
+import os
 
 # ---- פלטה ----------------------------------------------------------------
 BG        = "#08080c"
@@ -125,6 +126,36 @@ def meter(pct, color, width=760):
     return (f'<div class="meter" style="width:{width}px"><i style="width:{pct}%;'
             f'background:linear-gradient(90deg,{color},{color});'
             f'box-shadow:0 0 26px {color}"></i></div>')
+
+
+def photo(path, darken=0.30, blur=0, scale=1.0, z=1, extra=""):
+    """תצלום ריאליסטי כשכבת בסיס של השוט.
+
+    **למה תצלום ולא ציור:** הבעלים ביקש במפורש. תמונה ריאליסטית עובדת פה
+    הרבה יותר טוב מאיור וקטורי. הציור נשאר רק במקום שבו **טקסט חייב להיות
+    מדויק** — שם מודל תמונה מחזיר ג׳יבריש, ולכן ה-UI מולבש מעל התצלום.
+
+    darken/blur קיימים כדי שממשק שמונח מעל יישאר קריא: רקע חד ובהיר מתחת
+    לחלון טרמינל הורג את הניגודיות.
+    """
+    src = "file://" + os.path.abspath(path)
+    f = []
+    if darken:
+        f.append(f"brightness({1 - darken:.2f})")
+    if blur:
+        f.append(f"blur({blur}px)")
+    filt = f' filter:{" ".join(f)};' if f else ""
+    return (f'<img src="{src}" style="position:absolute;left:50%;top:50%;'
+            f'transform:translate(-50%,-50%) scale({scale});width:1920px;height:1080px;'
+            f'object-fit:cover;z-index:{z};{filt}{extra}">')
+
+
+def grade(cool=0.16, warm=0.10, z=45):
+    """שכבת צבע קולנועית מעל התצלום — קר מצד אחד, חם מהשני.
+    זה מה שמחבר תצלומים ממקורות שונים לקליפ אחד ולא לאלבום תמונות."""
+    return (f'<div style="position:absolute;inset:0;z-index:{z};pointer-events:none;'
+            f'background:linear-gradient(105deg, rgba(77,232,255,{cool}) 0%, '
+            f'transparent 46%, rgba(255,77,109,{warm}) 100%)"></div>')
 
 
 def page(body, css_extra=""):

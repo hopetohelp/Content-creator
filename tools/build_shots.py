@@ -8,6 +8,12 @@
 **60% מהשוטים אינם מראים פנים** — מסכים, אובייקטים, ידיים ומדים. זה מוריד
 את סיכון העקביות של הדמות ונראה יותר קולנועי (מסמך 2, סעיף 5).
 
+🔴 **חלוקת העבודה בין תצלום ל-HTML:**
+  • **בן אדם, חדר, אובייקט** ⇒ תצלום ריאליסטי מ-`fetch_image.py`.
+  • **כל דבר שיש בו טקסט או מספר** ⇒ HTML מולבש מעל התצלום.
+מודל תמונה מחזיר טרמינל עם ג׳יבריש, וכאן **המספרים הם הבדיחה** — `10%`
+חייב להיות מדויק.
+
 שימוש:
     python3 tools/build_shots.py                # בונה ומצלם את מה שחסר
     python3 tools/build_shots.py --force        # מצלם הכול מחדש
@@ -18,15 +24,15 @@ import argparse, json, os, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from character import svg as char                                   # noqa: E402
 from shot_kit import (AMBER, CYAN, DIM, GREEN, LINE, RED, TXT,      # noqa: E402
-                      battery, gfx, meter, page, phone, win)
+                      battery, gfx, grade, meter, page, phone, photo, win)
 
 HTML_DIR = "assets/shots/html"
 PNG_DIR = "assets/shots"
 
 
-def person(expr, glow, left, top, w, z=15, extra=""):
-    return (f'<div style="position:absolute;left:{left}px;top:{top}px;width:{w}px;'
-            f'z-index:{z};{extra}">{char(expr, glow)}</div>')
+def person(name, darken=0.06, scale=1.0):
+    """שוט דמות = תצלום מלא-פריים. `character.py` נשאר בריפו כגיבוי בלבד."""
+    return photo(f"assets/stills/char_{name}.jpg", darken=darken, scale=scale, z=1)
 
 
 def code_lines(rows):
@@ -38,15 +44,9 @@ def code_lines(rows):
     return "".join(out)
 
 
-def desk(extra_glow=""):
-    """שולחן חשוך עם שני מסכים — הרקע החוזר של החדר."""
-    return f'''<div style="position:absolute;left:0;top:640px;width:1920px;height:440px;
-       background:linear-gradient(180deg,#0d1017,#05060a);border-top:1px solid #1c2130;z-index:5"></div>
-    <div style="position:absolute;left:120px;top:250px;width:520px;height:330px;border-radius:10px;
-       background:#0b0e15;border:2px solid #1e2432;box-shadow:0 0 80px rgba(77,232,255,.13);z-index:6;
-       {extra_glow}"></div>
-    <div style="position:absolute;left:1290px;top:250px;width:520px;height:330px;border-radius:10px;
-       background:#0b0e15;border:2px solid #1e2432;box-shadow:0 0 80px rgba(255,77,109,.1);z-index:6"></div>'''
+def desk(plate="room_wide", darken=0.52, blur=4):
+    """רקע החדר כתצלום. מוכהה ומטושטש כדי שממשק שמונח מעליו יישאר קריא."""
+    return photo(f"assets/stills/{plate}.jpg", darken=darken, blur=blur, z=1)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -56,18 +56,21 @@ def desk(extra_glow=""):
 def shots():
     S = []
     def add(sid, start, end, body, move, note):
-        S.append(dict(id=sid, start=start, end=end, html=page(body), move=move, note=note))
+        S.append(dict(id=sid, start=start, end=end, html=page(body) , move=move, note=note))
 
     # ── פתיחה קרה ───────────────────────────────────────────────────────────
     add("s01", 0.0, 3.2,
-        desk() + phone(745, 110, f'''{battery(10, RED)}
+        photo("assets/stills/phone_hand.jpg", darken=0.30, z=1) + grade()
+        + phone(1210, 130, f'''{battery(10, RED)}
           <div style="font-size:86px;font-weight:800;color:{RED}">10%</div>
-          <div style="font-size:30px;color:{DIM};letter-spacing:.16em">BATTERY</div>''')
-        + gfx("10% BATTERY", 560, 726, "mid", "rd"),
+          <div style="font-size:30px;color:{DIM};letter-spacing:.16em">BATTERY</div>''',
+          rot=-4, scale=0.86)
+        + gfx("10% BATTERY", 150, 726, "mid", "rd"),
         "push_in", "טלפון: עשרה אחוז סוללה")
 
     add("s02", 3.2, 6.4,
-        desk() + win(300, 190, 1320, 700, "claude-agent — session", f'''
+        desk("monitor_back", darken=0.55, blur=5) + grade()
+        + win(300, 190, 1320, 700, "claude-agent — session", f'''
           {code_lines([("c-dim","$ agent run --task refactor"),
                        ("c-gr","✓ 41 files analyzed"),
                        ("c-gr","✓ patch applied"),
@@ -79,25 +82,25 @@ def shots():
         + gfx("10% TOKENS", 560, 748, "mid", "rd"),
         "push_in", "מסך: עשרה אחוז טוקנים")
 
-    add("s03", 6.4, 8.0,
-        desk() + person("dread", "warm", 610, 60, 700) ,
-        "snap_in", "קלוז-אפ: אוי לא")
+    add("s03", 6.4, 8.0, person("dread") + grade(), "snap_in", "קלוז-אפ: אוי לא")
 
     add("s04", 8.0, 9.6,
-        desk("box-shadow:0 0 140px rgba(77,232,255,.4)")
-        + person("bored", "cool", 660, 250, 600, z=8)
-        + gfx("TEN PERCENT", 415, 120, "big", "cy"),
+        person("shout", darken=0.20) + grade(0.22, 0.14)
+        + gfx("TEN PERCENT", 415, 110, "big", "cy"),
         "shake", "כניסת הביט — כרטיס פתיחה")
 
     # ── בית 1: סוללה ────────────────────────────────────────────────────────
     add("s05", 9.6, 12.8,
-        desk() + phone(745, 110, f'''{battery(10, RED)}
+        photo("assets/stills/phone_hand.jpg", darken=0.28, z=1) + grade()
+        + phone(1180, 150, f'''{battery(10, RED)}
           <div style="font-size:72px;font-weight:800;color:{RED}">10%</div>
-          <div style="width:300px;margin-top:10px">{meter(10, RED, 300)}</div>'''),
+          <div style="width:300px;margin-top:10px">{meter(10, RED, 300)}</div>''',
+          rot=-4, scale=0.86),
         "ken_left", "פס אדום בפינה")
 
     add("s06", 12.8, 16.0,
-        desk() + f'''<div style="position:absolute;left:430px;top:330px;width:1060px;
+        desk("desk_plate", darken=0.5, blur=5) + grade()
+        + f'''<div style="position:absolute;left:430px;top:330px;width:1060px;
           background:rgba(24,27,36,.97);border:1px solid {LINE};border-radius:26px;
           padding:44px 52px;z-index:25;box-shadow:0 40px 120px rgba(0,0,0,.8)">
           <div style="display:flex;align-items:center;gap:22px">
@@ -115,40 +118,17 @@ def shots():
         "push_in", "התראת סוללה חלשה")
 
     add("s07", 16.0, 19.2,
-        f'''<div style="position:absolute;inset:0;background:
-           radial-gradient(700px 460px at 50% 62%, rgba(77,232,255,.1), transparent 66%)"></div>
-        <svg viewBox="0 0 1920 1080" style="position:absolute;inset:0;z-index:12">
-          <path d="M 230 880 C 520 700, 700 1010, 980 830 S 1450 690, 1700 800"
-                stroke="#2a3040" stroke-width="26" fill="none" stroke-linecap="round"/>
-          <path d="M 230 880 C 520 700, 700 1010, 980 830 S 1450 690, 1700 800"
-                stroke="#3b4356" stroke-width="12" fill="none" stroke-linecap="round"/>
-          <rect x="1672" y="770" width="86" height="58" rx="9" fill="#4a5468"/>
-          <rect x="1748" y="784" width="26" height="12" rx="3" fill="{CYAN}" opacity=".8"/>
-          <rect x="196" y="852" width="70" height="56" rx="10" fill="#4a5468"/>
-        </svg>
-        <div style="position:absolute;left:0;top:660px;width:1920px;height:420px;
-          background:linear-gradient(180deg,#0a0d13,#05060a);z-index:6"></div>''',
+        photo("assets/stills/cable_floor.jpg", darken=0.18, z=1) + grade(),
         "ken_right", "כבל זרוק על הרצפה")
 
     add("s08", 19.2, 22.4,
-        desk() + f'''<div style="position:absolute;left:660px;top:340px;width:600px;height:330px;
-          border-radius:34px;background:linear-gradient(150deg,#2b3140,#141821);
-          border:2px solid #39415400;box-shadow:0 40px 110px rgba(0,0,0,.8);z-index:22">
-          <div style="position:absolute;left:44px;top:52px;font-size:30px;color:{DIM};
-            letter-spacing:.2em">POWER BANK</div>
-          <div style="position:absolute;left:44px;top:120px;display:flex;gap:14px">
-            <span style="width:26px;height:26px;border-radius:50%;background:{GREEN}"></span>
-            <span style="width:26px;height:26px;border-radius:50%;background:#2c3242"></span>
-            <span style="width:26px;height:26px;border-radius:50%;background:#2c3242"></span>
-            <span style="width:26px;height:26px;border-radius:50%;background:#2c3242"></span></div>
-          <div style="position:absolute;left:44px;top:200px;font-size:26px;color:#6b7488">
-            1 of 4 bars</div>
-          <div style="position:absolute;right:46px;bottom:46px;font-size:24px;color:#525b6e">
-            purchased 2021</div></div>''',
+        photo("assets/stills/powerbank.jpg", darken=0.18, z=1) + grade()
+        + gfx("2021", 1480, 880, "mid", "am"),
         "ken_up", "מטען נייד ישן")
 
     add("s09", 22.4, 25.6,
-        desk() + win(430, 250, 1060, 560, "settings — battery", f'''
+        desk("desk_plate", darken=0.5, blur=5) + grade()
+        + win(430, 250, 1060, 560, "settings — battery", f'''
           <div style="font-size:34px;color:{TXT};margin-bottom:36px">Low Power Mode</div>
           <div style="display:flex;align-items:center;justify-content:space-between">
             <span style="font-size:29px;color:{DIM}">Reduce background activity</span>
@@ -164,31 +144,33 @@ def shots():
         "push_in", "מצב חיסכון בסוללה")
 
     add("s10", 25.6, 28.8,
-        desk() + f'''<div style="position:absolute;left:460px;top:400px;width:1000px;z-index:24">
+        photo("assets/stills/keyboard.jpg", darken=0.55, z=1) + grade()
+        + f'''<div style="position:absolute;left:460px;top:400px;width:1000px;z-index:24">
           <div style="font-size:30px;color:{DIM};letter-spacing:.2em;margin-bottom:26px">BRIGHTNESS</div>
-          {meter(6, "#6f7789", 1000)}
-          <div style="margin-top:30px;font-size:26px;color:#3f4757">nearly dark — still fine</div></div>
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:23"></div>''',
+          {meter(6, "#8a93a6", 1000)}
+          <div style="margin-top:30px;font-size:26px;color:#5b6474">nearly dark — still fine</div></div>''',
         "ken_down", "בהירות מונמכת")
 
     add("s11", 28.8, 32.0,
-        desk() + person("bored", "cool", 640, 130, 660)
-        + f'''<div style="position:absolute;right:120px;bottom:150px;font-size:30px;
-          color:{DIM};z-index:30">// still working</div>''',
+        person("work", darken=0.12) + grade()
+        + f'''<div style="position:absolute;right:110px;bottom:130px;font-size:32px;
+          color:#8892a5;z-index:30">// still working</div>''',
         "ken_left", "הוא ממשיך לעבוד, אדיש")
 
     # ── הוק קצר ─────────────────────────────────────────────────────────────
     add("s12", 32.0, 35.2,
-        f'''<div style="position:absolute;inset:0;background:
-          radial-gradient(760px 620px at 50% 46%, rgba(70,229,138,.14), transparent 66%)"></div>
+        photo("assets/stills/room_wide.jpg", darken=0.62, blur=6, z=1)
+        + f'''<div style="position:absolute;inset:0;z-index:2;background:
+          radial-gradient(760px 620px at 50% 46%, rgba(70,229,138,.20), transparent 66%)"></div>
         <div style="position:absolute;left:835px;top:250px;z-index:20">{battery(10, GREEN)}</div>'''
         + gfx("10%", 800, 430, "huge", "gr")
         + gfx("BATTERY", 700, 720, "mid", "gr"),
         "punch", "עשרה אחוז סוללה — אני אשרוד")
 
     add("s13", 35.2, 38.4,
-        f'''<div style="position:absolute;inset:0;background:
-          radial-gradient(760px 620px at 50% 46%, rgba(255,77,109,.17), transparent 66%)"></div>
+        photo("assets/stills/monitor_back.jpg", darken=0.62, blur=6, z=1)
+        + f'''<div style="position:absolute;inset:0;z-index:2;background:
+          radial-gradient(760px 620px at 50% 46%, rgba(255,77,109,.22), transparent 66%)"></div>
         <div style="position:absolute;left:580px;top:270px;z-index:20">{meter(10, RED, 760)}</div>'''
         + gfx("10%", 800, 430, "huge", "rd")
         + gfx("TOKENS", 740, 720, "mid", "rd"),
@@ -196,7 +178,8 @@ def shots():
 
     # ── בית 2: טוקנים ───────────────────────────────────────────────────────
     add("s14", 38.4, 41.6,
-        desk() + win(210, 170, 1500, 740, "main.py — agent session", code_lines([
+        desk("monitor_back", darken=0.55, blur=5) + grade()
+        + win(210, 170, 1500, 740, "main.py — agent session", code_lines([
             ("c-cy", "def apply_patch(files):"),
             ("c-dim", "    # agent is writing this"),
             ("c-gr", "    for f in files:"),
@@ -209,7 +192,8 @@ def shots():
         "ken_up", "הסוכן עובד, הכל נבנה")
 
     add("s15", 41.6, 44.8,
-        desk() + win(260, 200, 1400, 680, "pytest", code_lines([
+        desk("desk_plate", darken=0.55, blur=5) + grade()
+        + win(260, 200, 1400, 680, "pytest", code_lines([
             ("c-gr", "tests/test_core.py .......... [ 34%]"),
             ("c-gr", "tests/test_api.py  .......... [ 68%]"),
             ("c-gr", "tests/test_cli.py  .......... [100%]"),
@@ -218,10 +202,9 @@ def shots():
         ]), accent=GREEN),
         "ken_right", "כל הבדיקות ירוקות")
 
-    # החלון ממולא עד למטה בכוונה: הזום נוחת בפינה הימנית-תחתונה שלו, ופאנל
-    # ריק שם נותן פריים שחור — נמדד ב-blackdetect וזה נכשל.
     add("s16", 44.8, 48.0,
-        desk() + win(210, 170, 1500, 740, "main.py — agent session", code_lines([
+        desk("monitor_back", darken=0.58, blur=5) + grade()
+        + win(210, 170, 1500, 740, "main.py — agent session", code_lines([
             ("c-gr", "    for f in files:"),
             ("c-gr", "        f.rewrite(plan[f])"),
             ("c-gr", "    return commit(files)"),
@@ -237,15 +220,17 @@ def shots():
         "zoom_corner", "מספר אפור קטן בפינה")
 
     add("s17", 48.0, 51.2,
-        f'''<div style="position:absolute;inset:0;background:
-          radial-gradient(900px 700px at 50% 50%, rgba(255,179,71,.2), transparent 68%)"></div>
+        photo("assets/stills/monitor_back.jpg", darken=0.60, blur=5, z=1)
+        + f'''<div style="position:absolute;inset:0;z-index:2;background:
+          radial-gradient(900px 700px at 50% 50%, rgba(255,179,71,.24), transparent 68%)"></div>
         <div style="position:absolute;left:580px;top:600px;z-index:22">{meter(10, AMBER, 760)}</div>'''
         + gfx("TOKEN BUDGET", 555, 300, "mid", "am")
         + gfx("10%", 800, 400, "huge", "am"),
         "shake", "תקציב טוקנים: עשרה אחוז")
 
     add("s18", 51.2, 54.4,
-        desk() + win(300, 260, 1320, 560, "prompt", f'''
+        desk("desk_plate", darken=0.55, blur=5) + grade()
+        + win(300, 260, 1320, 560, "prompt", f'''
           <div style="font-size:29px;color:#3d4453;text-decoration:line-through">
             Could you please carefully refactor the following</div>
           <div style="font-size:29px;color:#3d4453;text-decoration:line-through">
@@ -257,7 +242,8 @@ def shots():
         "push_in", "מוחק את ההסבר, נשאר fix")
 
     add("s19", 54.4, 57.6,
-        desk() + f'''<div style="position:absolute;left:210px;top:250px;width:1500px;
+        desk("monitor_back", darken=0.55, blur=5) + grade()
+        + f'''<div style="position:absolute;left:210px;top:250px;width:1500px;
           background:#12141c;border:1px solid {LINE};border-radius:14px;z-index:22;
           box-shadow:0 40px 120px rgba(0,0,0,.75);overflow:hidden">
           <div style="display:flex;height:64px;border-bottom:1px solid {LINE}">
@@ -274,15 +260,16 @@ def shots():
         "ken_left", "סוגר טאבים")
 
     add("s20", 57.6, 60.8,
-        desk() + person("panic", "warm", 640, 100, 660)
-        + f'''<div style="position:absolute;left:580px;bottom:120px;z-index:30">
+        person("panic", darken=0.10) + grade(0.10, 0.24)
+        + f'''<div style="position:absolute;left:580px;bottom:110px;z-index:30">
           {meter(7, RED, 760)}</div>''',
         "shake", "פאניקה + מד טוקנים מתרוקן")
 
     # ── שורת המם + ירידת ביט ────────────────────────────────────────────────
     add("s21", 60.8, 64.0,
-        f'''<div style="position:absolute;inset:0;background:
-          radial-gradient(1000px 700px at 50% 50%, rgba(77,232,255,.12), transparent 70%)"></div>
+        photo("assets/stills/room_wide.jpg", darken=0.70, blur=7, z=1)
+        + f'''<div style="position:absolute;inset:0;z-index:2;background:
+          radial-gradient(1000px 700px at 50% 50%, rgba(77,232,255,.14), transparent 70%)"></div>
         <div style="position:absolute;left:110px;top:400px;width:1700px;z-index:30;
           font-size:68px;font-weight:800;line-height:1.42;letter-spacing:.005em;
           white-space:nowrap;color:#eafcff;text-shadow:0 0 30px rgba(77,232,255,.5)">
@@ -292,61 +279,57 @@ def shots():
         "hold", "שורת המם")
 
     # תיבת הדממה. כהה מאוד — אבל **לא שחורה**: פריים שחור באמצע קליפ נקרא
-    # אצל הצופה כתקלה, ו-blackdetect מסמן אותו ככישלון. הסמן והמסכים
-    # הכבויים מוכיחים שזה שוט מכוון.
+    # אצל הצופה כתקלה, ו-QA מסמן אותו ככישלון.
     add("s22", 64.0, 65.6,
-        f'''<div style="position:absolute;inset:0;background:#07070c"></div>
-        <div style="position:absolute;left:0;top:640px;width:1920px;height:440px;
-          background:linear-gradient(180deg,#0e1119,#08090e);z-index:5"></div>
-        <div style="position:absolute;left:120px;top:250px;width:520px;height:330px;
-          border-radius:10px;background:#0d1119;border:2px solid #222839;z-index:6"></div>
-        <div style="position:absolute;left:1290px;top:250px;width:520px;height:330px;
-          border-radius:10px;background:#0d1119;border:2px solid #222839;z-index:6"></div>
-        <div style="position:absolute;left:836px;top:404px;font-size:38px;
-          color:#6f7a8f;z-index:31;letter-spacing:.12em">_</div>
-        <div style="position:absolute;left:948px;top:388px;width:20px;height:54px;
+        photo("assets/stills/room_wide.jpg", darken=0.80, blur=3, z=1)
+        + f'''<div style="position:absolute;left:948px;top:500px;width:20px;height:54px;
           background:{CYAN};opacity:.95;z-index:32;box-shadow:0 0 46px {CYAN}"></div>''',
         "hold", "דממה מוחלטת")
 
     # ── פזמון שיא — חיתוכים מהירים ──────────────────────────────────────────
-    add("s23", 65.6, 67.2, desk() + person("shout", "both", 620, 90, 700), "punch", "בצעקה")
+    add("s23", 65.6, 67.2, person("shout", darken=0.10) + grade(0.20, 0.14), "punch", "בצעקה")
     add("s24", 67.2, 68.8,
-        f'''<div style="position:absolute;inset:0;background:
-          radial-gradient(760px 620px at 50% 48%, rgba(70,229,138,.16), transparent 66%)"></div>
+        photo("assets/stills/room_wide.jpg", darken=0.62, blur=6, z=1)
+        + f'''<div style="position:absolute;inset:0;z-index:2;background:
+          radial-gradient(760px 620px at 50% 48%, rgba(70,229,138,.20), transparent 66%)"></div>
         <div style="position:absolute;left:835px;top:290px;z-index:20">{battery(10, GREEN)}</div>'''
         + gfx("10%", 800, 470, "huge", "gr"), "punch", "עשרה אחוז סוללה")
-    add("s25", 68.8, 70.4, desk() + person("shout", "warm", 620, 90, 700), "punch", "בצעקה")
+    add("s25", 68.8, 70.4, person("shout2", darken=0.10) + grade(0.12, 0.22), "punch", "בצעקה")
     add("s26", 70.4, 72.0,
-        f'''<div style="position:absolute;inset:0;background:
-          radial-gradient(760px 620px at 50% 48%, rgba(255,77,109,.18), transparent 66%)"></div>
+        photo("assets/stills/monitor_back.jpg", darken=0.62, blur=6, z=1)
+        + f'''<div style="position:absolute;inset:0;z-index:2;background:
+          radial-gradient(760px 620px at 50% 48%, rgba(255,77,109,.22), transparent 66%)"></div>
         <div style="position:absolute;left:580px;top:320px;z-index:20">{meter(10, RED, 760)}</div>'''
         + gfx("10%", 800, 470, "huge", "rd"), "punch", "עשרה אחוז טוקנים")
 
     add("s27", 72.0, 75.2,
-        desk() + phone(745, 130, f'''<div style="font-size:120px;color:#39404f">0%</div>
-          <div style="font-size:28px;color:#2f3542;letter-spacing:.2em">PHONE OFF</div>''',
-          rot=13)
-        + f'''<div style="position:absolute;right:150px;bottom:170px;font-size:34px;
-          color:{DIM};z-index:30">// don't care</div>''',
+        photo("assets/stills/phone_desk.jpg", darken=0.30, z=1) + grade()
+        + gfx("0%", 830, 300, "huge", "cy")
+        + f'''<div style="position:absolute;right:140px;bottom:150px;font-size:34px;
+          color:#8892a5;z-index:30">// don't care</div>''',
         "ken_down", "הטלפון מת לו ביד, לא אכפת")
 
-    add("s28", 75.2, 76.8, desk() + person("shout", "both", 600, 70, 740), "shake", "בצעקה, רחב")
+    add("s28", 75.2, 76.8, person("shout", darken=0.14, scale=1.08) + grade(0.20, 0.16),
+        "shake", "בצעקה, רחב")
     add("s29", 76.8, 78.4,
-        f'''<div style="position:absolute;inset:0;background:
-          radial-gradient(820px 620px at 50% 50%, rgba(255,77,109,.2), transparent 66%)"></div>
+        photo("assets/stills/monitor_back.jpg", darken=0.62, blur=6, z=1)
+        + f'''<div style="position:absolute;inset:0;z-index:2;background:
+          radial-gradient(820px 620px at 50% 50%, rgba(255,77,109,.24), transparent 66%)"></div>
         <div style="position:absolute;left:580px;top:490px;z-index:22">{meter(4, RED, 760)}</div>'''
         + gfx("TOKENS", 700, 300, "mid", "rd"), "punch", "המד כמעט ריק")
 
     # ── סיום ────────────────────────────────────────────────────────────────
     add("s30", 78.4, 81.6,
-        f'''<div style="position:absolute;inset:0;background:
-          radial-gradient(900px 720px at 50% 50%, rgba(255,77,109,.24), transparent 68%)"></div>
+        photo("assets/stills/room_wide.jpg", darken=0.66, blur=6, z=1)
+        + f'''<div style="position:absolute;inset:0;z-index:2;background:
+          radial-gradient(900px 720px at 50% 50%, rgba(255,77,109,.28), transparent 68%)"></div>
         <div style="position:absolute;left:580px;top:660px;z-index:22">{meter(1, RED, 760)}</div>'''
         + gfx("1%", 830, 330, "huge", "rd"),
         "shake", "אחוז אחד")
 
     add("s31", 81.6, 83.2,
-        desk() + win(300, 330, 1320, 420, "prompt", f'''
+        desk("desk_plate", darken=0.5, blur=5) + grade()
+        + win(300, 330, 1320, 420, "prompt", f'''
           <div style="font-size:60px;color:{CYAN};font-weight:700">
             fix bug pls<span style="opacity:.9">▌</span></div>
           <div style="margin-top:52px;font-size:26px;color:{DIM}">press ⏎ to send</div>''',
@@ -354,7 +337,8 @@ def shots():
         "punch", "הפרומפט האחרון")
 
     add("s32", 83.2, 84.8,
-        desk() + win(300, 330, 1320, 420, "claude-agent", f'''
+        desk("monitor_back", darken=0.58, blur=5) + grade()
+        + win(300, 330, 1320, 420, "claude-agent", f'''
           <div style="font-size:38px;color:{DIM}">thinking</div>
           <div style="margin-top:40px;display:flex;gap:20px">
             <span style="width:26px;height:26px;border-radius:50%;background:{CYAN}"></span>
@@ -364,23 +348,20 @@ def shots():
         "hold", "דממה דרמטית — הסוכן חושב")
 
     add("s33", 84.8, 86.8,
-        f'''<div style="position:absolute;inset:0;background:
-          radial-gradient(900px 720px at 50% 50%, rgba(70,229,138,.2), transparent 68%)"></div>'''
-        + desk() + person("joy", "cool", 620, 120, 680)
+        person("joy", darken=0.10) + grade(0.20, 0.10)
         + gfx("BUG FIXED", 610, 80, "mid", "gr"),
         "punch", "זה עבד — חגיגה")
 
     add("s34", 86.8, 87.4,
-        f'''<div style="position:absolute;inset:0;background:#040407"></div>'''
+        photo("assets/stills/monitor_back.jpg", darken=0.78, blur=4, z=1)
         + gfx("0% TOKENS", 470, 460, "big", "rd"),
         "hold", "אפס אחוז טוקנים")
 
     add("s35", 87.4, 89.6,
-        f'''<div style="position:absolute;inset:0;background:#06060a"></div>'''
-        + desk() + person("calm", "cool", 660, 200, 620)
-        + phone(1420, 330, f'''<div style="font-size:96px;font-weight:800;color:{GREEN}">90%</div>
+        person("calm", darken=0.14) + grade()
+        + phone(1450, 360, f'''<div style="font-size:96px;font-weight:800;color:{GREEN}">90%</div>
           <div style="font-size:26px;color:{DIM};letter-spacing:.18em">BATTERY</div>''',
-          rot=-7, scale=0.62),
+          rot=-7, scale=0.58),
         "ken_up", "הפאנץ' האחרון — הטלפון על תשעים")
 
     return S
