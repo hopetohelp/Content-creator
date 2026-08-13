@@ -1,0 +1,76 @@
+<!doctype html><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#08080c;
+  font-family:'JetBrains Mono','JetBrainsMono',monospace;color:#c7cede;-webkit-font-smoothing:antialiased}
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden}
+/* זוהר המסך — מה שהופך "רקע שחור" ל"חדר מפתחים חשוך" */
+.stage::before{content:'';position:absolute;inset:0;z-index:0;
+  background:
+   radial-gradient(1100px 720px at 50% 38%, rgba(77,232,255,.14), transparent 62%),
+   radial-gradient(760px 560px at 84% 74%, rgba(255,77,109,.09), transparent 64%),
+   radial-gradient(620px 480px at 12% 82%, rgba(70,229,138,.06), transparent 66%)}
+/* ויניטה + סריקה: מוסיפות "עדשה" ומונעות מהפריים להיראות כמו שקופית */
+.stage::after{content:'';position:absolute;inset:0;z-index:60;pointer-events:none;
+  background:
+   repeating-linear-gradient(180deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px),
+   radial-gradient(120% 100% at 50% 50%, transparent 52%, rgba(0,0,0,.72) 100%)}
+.layer{position:absolute;inset:0;z-index:10}
+
+/* ---- חלון (טרמינל / IDE / דפדפן) ---- */
+.win{position:absolute;background:#12141c;border:1px solid #262b38;border-radius:14px;
+  box-shadow:0 40px 120px rgba(0,0,0,.75), 0 0 0 1px rgba(77,232,255,.06),
+             0 0 90px rgba(77,232,255,.07);overflow:hidden}
+.bar{height:46px;background:#1a1d28;border-bottom:1px solid #262b38;
+  display:flex;align-items:center;gap:10px;padding:0 18px}
+.dot{width:13px;height:13px;border-radius:50%}
+.title{margin-left:14px;font-size:19px;color:#5d6577;letter-spacing:.4px}
+.body{padding:26px 30px;font-size:26px;line-height:1.62}
+.c-dim{color:#5d6577} .c-cy{color:#4de8ff} .c-gr{color:#46e58a}
+.c-am{color:#ffb347} .c-rd{color:#ff4d6d} .b{font-weight:700}
+
+/* ---- שכבת הגרפיקה: המילים המודגשות ---- */
+.gfx{position:absolute;z-index:50;font-family:'JetBrains Mono','JetBrainsMono',monospace;font-weight:800;
+  letter-spacing:.055em;text-transform:uppercase;white-space:nowrap}
+.gfx.big{font-size:150px} .gfx.huge{font-size:210px} .gfx.mid{font-size:92px}
+.glow-cy{color:#eafcff;text-shadow:0 0 22px #4de8ff,0 0 62px rgba(77,232,255,.62)}
+.glow-rd{color:#fff0f3;text-shadow:0 0 22px #ff4d6d,0 0 62px rgba(255,77,109,.6)}
+.glow-am{color:#fff6e6;text-shadow:0 0 22px #ffb347,0 0 62px rgba(255,179,71,.55)}
+.glow-gr{color:#eafff4;text-shadow:0 0 22px #46e58a,0 0 62px rgba(70,229,138,.55)}
+
+/* ---- טלפון ---- */
+.phone{position:absolute;width:430px;height:880px;border-radius:56px;
+  background:linear-gradient(160deg,#20242f,#0d0f15);border:3px solid #333a49;
+  box-shadow:0 50px 130px rgba(0,0,0,.85),0 0 70px rgba(77,232,255,.1);overflow:hidden}
+.screen{position:absolute;inset:13px;border-radius:44px;background:#05060a;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px}
+.notch{position:absolute;top:16px;left:50%;transform:translateX(-50%);
+  width:132px;height:26px;border-radius:14px;background:#05060a;z-index:3}
+
+/* ---- מד סוללה / טוקנים ---- */
+.batt{position:relative;width:250px;height:116px;border:9px solid #c7cede;
+  border-radius:16px}
+.batt::after{content:'';position:absolute;right:-26px;top:32px;width:17px;height:44px;
+  background:#c7cede;border-radius:0 6px 6px 0}
+.fill{position:absolute;top:6px;bottom:6px;left:6px;border-radius:7px}
+.meter{height:34px;border-radius:17px;background:#1b1f2a;overflow:hidden;
+  border:1px solid #262b38}
+.meter>i{display:block;height:100%;border-radius:17px}
+</style><div class="stage"><div style="position:absolute;left:0;top:640px;width:1920px;height:440px;
+       background:linear-gradient(180deg,#0d1017,#05060a);border-top:1px solid #1c2130;z-index:5"></div>
+    <div style="position:absolute;left:120px;top:250px;width:520px;height:330px;border-radius:10px;
+       background:#0b0e15;border:2px solid #1e2432;box-shadow:0 0 80px rgba(77,232,255,.13);z-index:6;
+       "></div>
+    <div style="position:absolute;left:1290px;top:250px;width:520px;height:330px;border-radius:10px;
+       background:#0b0e15;border:2px solid #1e2432;box-shadow:0 0 80px rgba(255,77,109,.1);z-index:6"></div><div class="win" style="left:210px;top:170px;width:1500px;height:740px;z-index:10;">
+  <div class="bar">
+    <span class="dot" style="background:#ff5f57"></span>
+    <span class="dot" style="background:#febc2e"></span>
+    <span class="dot" style="background:#28c840"></span>
+    <span class="title" style="color:#4de8ff">main.py — agent session</span>
+  </div>
+  <div class="body"><div><span class="c-dim" style="display:inline-block;width:56px;text-align:right;margin-right:26px">1</span><span class="c-gr">    for f in files:</span></div><div><span class="c-dim" style="display:inline-block;width:56px;text-align:right;margin-right:26px">2</span><span class="c-gr">        f.rewrite(plan[f])</span></div><div><span class="c-dim" style="display:inline-block;width:56px;text-align:right;margin-right:26px">3</span><span class="c-gr">    return commit(files)</span></div><div><span class="c-dim" style="display:inline-block;width:56px;text-align:right;margin-right:26px">4</span><span class="c-dim"></span></div><div><span class="c-dim" style="display:inline-block;width:56px;text-align:right;margin-right:26px">5</span><span class="c-gr">▸ agent: 41/41 files done</span></div><div><span class="c-dim" style="display:inline-block;width:56px;text-align:right;margin-right:26px">6</span><span class="c-gr">▸ tests: 96 passed</span></div><div><span class="c-dim" style="display:inline-block;width:56px;text-align:right;margin-right:26px">7</span><span class="c-dim">▸ writing summary…</span></div></div>
+</div><div style="position:absolute;left:1250px;top:790px;font-size:31px;
+          color:#7f8a9e;z-index:40">tokens 10%</div>
+        <div style="position:absolute;left:1216px;top:774px;width:266px;height:66px;
+          border:2px solid #ffb347;border-radius:10px;z-index:39;opacity:.75;
+          box-shadow:0 0 40px rgba(255,179,71,.28)"></div></div>
